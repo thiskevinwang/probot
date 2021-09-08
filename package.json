@@ -1,0 +1,22 @@
+{
+  "name": "probot",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thiskevinwang/probot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/thiskevinwang/probot/issues"
+  },
+  "homepage": "https://github.com/thiskevinwang/probot#readme",
+  "devDependencies": {
+    "@vercel/node": "^1.12.1"
+  }
+}
