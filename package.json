@@ -17,6 +17,11 @@
   },
   "homepage": "https://github.com/thiskevinwang/probot#readme",
   "devDependencies": {
-    "@vercel/node": "^1.12.1"
+    "@types/node": "^16.9.0",
+    "@vercel/node": "^1.12.1",
+    "typescript": "^4.4.2"
+  },
+  "dependencies": {
+    "probot": "^12.1.1"
   }
 }
