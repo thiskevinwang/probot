@@ -38,7 +38,6 @@ mutation comment($id: ID!, $body: String!) {
     });
   });
   app.on("pull_request.opened", async (ctx) => {
-    ctx.payload.repository.name;
     await ctx.octokit.request(
       //https://docs.github.com/en/rest/reference/pulls#create-a-review-for-a-pull-request
       "POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews",
@@ -46,7 +45,11 @@ mutation comment($id: ID!, $body: String!) {
         owner: ctx.payload.repository.owner.login,
         repo: ctx.payload.repository.name,
         pull_number: ctx.payload.pull_request.number,
-        body: JSON.stringify(ctx),
+        body: `
+### \`pull_request.opened\`
+
+${ctx.name}
+`,
         event: "COMMENT",
       }
     );
@@ -58,7 +61,11 @@ mutation comment($id: ID!, $body: String!) {
         owner: ctx.payload.repository.owner.login,
         repo: ctx.payload.repository.name,
         pull_number: ctx.payload.pull_request.number,
-        body: JSON.stringify(ctx),
+        body: `
+### \`pull_request.synchronize\`
+
+- ${ctx.name}
+`,
         event: "COMMENT",
       }
     );
