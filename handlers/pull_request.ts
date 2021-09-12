@@ -4,10 +4,10 @@ type Fn = HandlerFunction<"pull_request.opened" | "pull_request.synchronize">;
 
 export default <Fn>async function (ctx) {
   const body = `
-### \`pull_request.opened\`
-
-${ctx.name}
+### ${ctx.name}::${ctx.payload.action}
 `;
+  // name: pull_request
+  // payload.action: opened | synchronize
 
   await ctx.octokit.request(
     //https://docs.github.com/en/rest/reference/pulls#create-a-review-for-a-pull-request

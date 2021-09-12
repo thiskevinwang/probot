@@ -17,10 +17,11 @@ const probot = createProbot({
 });
 
 const appFn: ApplicationFunction = (app) => {
-  app.on("push", handlers.handlePush);
-  app.on("issues.opened", handlers.handleIssuesOpened);
-  app.on("pull_request.opened", handlers.handlePullRequest);
-  app.on("pull_request.synchronize", handlers.handlePullRequest);
+  app.on("push", handlers.push);
+  app.on("issues.opened", handlers.issues_opened);
+  app.on("pull_request.reopened", handlers.pull_request_reopened);
+  app.on("pull_request.opened", handlers.pull_request);
+  app.on("pull_request.synchronize", handlers.pull_request);
 };
 
 const eventHandler = createNodeMiddleware(appFn, {
