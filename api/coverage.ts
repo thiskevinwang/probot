@@ -66,11 +66,11 @@ const handler = async (req: VercelRequest, res: VercelResponse) => {
   const t = summary.total;
   try {
     await appOctoKit.request(
-      "POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews",
+      "POST /repos/{owner}/{repo}/issues/{issue_number}/comments",
       {
         owner: owner,
         repo: repo,
-        pull_number: parseInt(pull_number),
+        issue_number: parseInt(pull_number),
         body:
           "## Hello\n\n" +
           `
@@ -80,7 +80,6 @@ const handler = async (req: VercelRequest, res: VercelResponse) => {
 | \`statements\` | ${t.statements.total} | ${t.statements.covered} | ${t.statements.skipped} | ${t.statements.pct} |
 | \`functions\`  | ${t.functions.total}  | ${t.functions.covered}  | ${t.functions.skipped}  | ${t.functions.pct}  |
 | \`branches\`   | ${t.branches.total}   | ${t.branches.covered}   | ${t.branches.skipped}   | ${t.branches.pct}   |`,
-        event: "COMMENT",
       }
     );
     res.status(200).send("OK!");
