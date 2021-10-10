@@ -13,6 +13,7 @@ interface Total {
 }
 
 interface Body {
+  heading: string;
   owner: string;
   repo: string;
   // workflow YAML will convert this to string ""
@@ -61,31 +62,80 @@ const appOctoKit = new Octokit({
 });
 
 const handler = async (req: VercelRequest, res: VercelResponse) => {
-  const { owner, repo, pull_number, summary }: Body = req.body;
+  if (Array.isArray(req.body)) {
+    let message: string[] = [];
 
-  const t = summary.total;
-  try {
-    await appOctoKit.request(
-      "POST /repos/{owner}/{repo}/issues/{issue_number}/comments",
-      {
-        owner: owner,
-        repo: repo,
-        issue_number: parseInt(pull_number),
-        body:
-          "## Hello\n\n" +
-          `
+    let owner = "";
+    let repo = "";
+    let pull_number = "";
+
+    req.body.forEach((e: Body) => {
+      const { heading, summary } = e;
+
+      ({ owner, repo, pull_number } = e);
+
+      const t = summary.total;
+      const lines = [
+        `## [${heading}] Coverage\n\n`,
+        `
+  |                | Total                 | Covered                 | Skipped                 | % |
+  | -------------- | --------------------- | ----------------------- | ----------------------- | --- |
+  | \`lines\`      | ${t.lines.total}      | ${t.lines.covered}      | ${t.lines.skipped}      | ${t.lines.pct}      |
+  | \`statements\` | ${t.statements.total} | ${t.statements.covered} | ${t.statements.skipped} | ${t.statements.pct} |
+  | \`functions\`  | ${t.functions.total}  | ${t.functions.covered}  | ${t.functions.skipped}  | ${t.functions.pct}  |
+  | \`branches\`   | ${t.branches.total}   | ${t.branches.covered}   | ${t.branches.skipped}   | ${t.branches.pct}   |
+  \n`,
+      ];
+
+      message = message.concat(lines);
+    });
+
+    try {
+      await appOctoKit.request(
+        "POST /repos/{owner}/{repo}/issues/{issue_number}/comments",
+        {
+          owner: owner,
+          repo: repo,
+          issue_number: parseInt(pull_number),
+          body: message.join(""),
+        }
+      );
+      res.status(200).send("OK!");
+    } catch (err) {
+      console.error(err);
+      res.status(200).json(err);
+    }
+  } else {
+    const { heading, owner, repo, pull_number, summary }: Body = req.body;
+
+    const t = summary.total;
+    const message = [
+      `## [${heading}] Coverage\n\n`,
+      `
 |                | Total                 | Covered                 | Skipped                 | % |
 | -------------- | --------------------- | ----------------------- | ----------------------- | --- |
 | \`lines\`      | ${t.lines.total}      | ${t.lines.covered}      | ${t.lines.skipped}      | ${t.lines.pct}      |
 | \`statements\` | ${t.statements.total} | ${t.statements.covered} | ${t.statements.skipped} | ${t.statements.pct} |
 | \`functions\`  | ${t.functions.total}  | ${t.functions.covered}  | ${t.functions.skipped}  | ${t.functions.pct}  |
-| \`branches\`   | ${t.branches.total}   | ${t.branches.covered}   | ${t.branches.skipped}   | ${t.branches.pct}   |`,
-      }
-    );
-    res.status(200).send("OK!");
-  } catch (err) {
-    console.error(err);
-    res.status(200).json(err);
+| \`branches\`   | ${t.branches.total}   | ${t.branches.covered}   | ${t.branches.skipped}   | ${t.branches.pct}   |
+\n`,
+    ];
+
+    try {
+      await appOctoKit.request(
+        "POST /repos/{owner}/{repo}/issues/{issue_number}/comments",
+        {
+          owner: owner,
+          repo: repo,
+          issue_number: parseInt(pull_number),
+          body: message.join(""),
+        }
+      );
+      res.status(200).send("OK!");
+    } catch (err) {
+      console.error(err);
+      res.status(200).json(err);
+    }
   }
 };
 
